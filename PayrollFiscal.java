@@ -22,6 +22,7 @@ public class PayrollFiscal {
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
         job.setMapperClass(PayrollFiscalMapper.class);
         job.setReducerClass(PayrollFiscalReducer.class);
+        job.setNumReduceTasks(1);
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(Text.class);
         job.waitForCompletion(true);

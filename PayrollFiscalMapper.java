@@ -4,29 +4,28 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-public class PayrollFiscalMapper extends Mapper<Text, Text, Text, Text> {
-
-    HashSet<String> set = new HashSet<>();
+public class PayrollFiscalMapper extends Mapper<LongWritable, Text, Text, Text> {
 
     Set<String> boroughSet = new HashSet<>(Arrays.asList("MANHATTAN", "BRONX", "BROOKLYN", "QUEENS", "STATEN ISLAND"));
 
     @Override
-    public void map(Text key, Text value, Context context) throws IOException, InterruptedException {
-        String[] args = value.toString().split(",");
+    public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        StringBuilder builder = new StringBuilder(value.toString());
+        boolean inQuotes = false;
+        for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
+            char currentChar = builder.charAt(currentIndex);
+            if (currentChar == '\"') {
+                inQuotes = !inQuotes; // toggle state
+            }
+            if (currentChar == ',' && inQuotes) {
+                builder.setCharAt(currentIndex, ';');
+            }
+        }
+        String[] args = builder.toString().split(",");
+
         String outputString = "";
         StringBuilder listOfOutputString = new StringBuilder();
         int numColumns = args.length;
-        /* for (int i = 0; i < numColumns; i++) {
-            double totalPay = 0;
-            String boroughString = args[7];
-            if (listOfOutputString.length() == 0) {
-                // Handling the first element
-                listOfOutputString.append()
-            } else {
-
-            }
-            context.write(new Text(boroughString), new Text(listOfOutputString.toString()));
-        } */
         double totalPay = 0;
         String boroughString = args[7];
         if (!boroughSet.contains(boroughString)) {
@@ -40,7 +39,7 @@ public class PayrollFiscalMapper extends Mapper<Text, Text, Text, Text> {
         } else {
             totalPay = (Double.parseDouble(args[10]) * 5 * 49) + Double.parseDouble(args[15]) + Double.parseDouble(args[16]);
         }
-        listOfOutputString.append(args[0] + "," + args[2] + "," + String.valueOf(totalPay));
+        listOfOutputString.append(args[0] + "," + args[2] + "," + args[14] + "," + args[15] + "," + String.valueOf(totalPay));
         context.write(new Text(boroughString), new Text(listOfOutputString.toString()));
     }
 }
