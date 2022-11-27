@@ -15,7 +15,7 @@ public class PayrollFiscalMapper extends Mapper<LongWritable, Text, Text, Text> 
         for (int currentIndex = 0; currentIndex < builder.length(); currentIndex++) {
             char currentChar = builder.charAt(currentIndex);
             if (currentChar == '\"') {
-                inQuotes = !inQuotes; // toggle state
+                inQuotes = !inQuotes;
             }
             if (currentChar == ',' && inQuotes) {
                 builder.setCharAt(currentIndex, ';');
@@ -23,7 +23,6 @@ public class PayrollFiscalMapper extends Mapper<LongWritable, Text, Text, Text> 
         }
         String[] args = builder.toString().split(",");
 
-        String outputString = "";
         StringBuilder listOfOutputString = new StringBuilder();
         int numColumns = args.length;
         double totalPay = 0;
