@@ -14,7 +14,6 @@ public class ArrestsMain {
             System.exit(-1);
         }
         Configuration configuration = new Configuration();
-        //configuration.set("mapred.textoutputformat.separator", ",");
         Job job = Job.getInstance(configuration);
         job.setJarByClass(ArrestsMain.class);
         job.setJobName("Arrests Data");
